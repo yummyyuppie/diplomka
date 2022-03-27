@@ -1,0 +1,17 @@
+html {
+  font-size: 62.5%;
+}
+.container {
+  padding: 0 7rem;
+}
+
+.btn-green{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 1.6rem 5.6rem;
+  background: map-get($colors, green);
+  border: 2px solid map-get($colors, border-green);
+  border-radius: 5.6rem;
+}

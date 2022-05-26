@@ -3,14 +3,17 @@
     <div class="speciality_info">
       <ul>
         <li class="speciality_name">
-          {{ speciality.name }}
+          {{ speciality.edu_prog_name }}
         </li>
-        <li class="speciality_code">Код: {{ speciality.code }}</li>
+        <li class="speciality_code">Код: {{ speciality.edu_prog_id }}</li>
         <li class="speciality_grant">
-          Количество грантов (2022): {{ speciality.last_grant }}
+          Количество грантов (2022): {{ speciality.count_grant_2022 }}
         </li>
         <li class="speciality_lowest">
-          Проходной балл на грант: {{ speciality.lowest_point }}
+          Проходной балл на грант(Общий конкурс): {{ speciality.min_point_state_gr_state_quota }}
+        </li>
+        <li class="speciality_lowest">
+          Проходной балл на грант(Сельская квота): {{ speciality.min_point_state_gr_rural_quota }}
         </li>
       </ul>
     </div>
@@ -29,7 +32,7 @@ export default {
   },
   methods: {
     goToSpeciality() {
-      this.$router.push(`/specialities/${this.speciality.id}`);
+      this.$router.push({path: `/specialities/${this.speciality?.edu_prog_id}`});
     },
   },
 };
@@ -51,6 +54,11 @@ export default {
   cursor: pointer;
   ul {
     list-style-type: circle;
+  }
+  .speciality_name{
+    list-style-type: none;
+    font-weight: 700;
+    font-size: 2.1rem;
   }
   .enter_probability {
     font-weight: 700;

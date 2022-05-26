@@ -1,37 +1,51 @@
 <template>
   <section class="results">
-    <div class="results_info">
-      <p class="results_header">{{ $t("your_ent_score") }}: {{ p }}</p>
-      <p class="profile_subjects">
-        {{ $t("profile_subjects") }}: {{ firstSubject }} и {{ secondSubject }}
-      </p>
-      <p class="quota_type">
-        {{ $t("quota") }}:
-        {{ isVillageQuota ? $t("village_quota") : $t("ordinary_quota") }}
-      </p>
-    </div>
-    <div class="results_specialities">
-      <template>
-        <speciality-card v-for="s in specialities" :key="s.id" :speciality="s">
-          <template #prob>
-            <div class="enter_probability">
-              <div class="prob_percent">{{ s.probability }} %</div>
-              <div class="prob_text" :style="{ color: getColor(s.probability) }">
-                {{ s.probability_text }}
+    <loader v-if="loading" />
+    <template v-else>
+      <div class="results_info">
+        <p class="results_header">{{ $t("your_ent_score") }}: {{ p }}</p>
+        <p class="profile_subjects">
+          {{ $t("profile_subjects") }}: {{ firstSubject }} и {{ secondSubject }}
+        </p>
+        <p class="quota_type">
+          {{ $t("quota") }}:
+          {{ isVillageQuota ? $t("village_quota") : $t("ordinary_quota") }}
+        </p>
+      </div>
+      <div class="results_specialities">
+        <template>
+          <speciality-card
+            v-for="s in specialities"
+            :key="s.id"
+            :speciality="s"
+          >
+            <template #prob>
+              <div class="enter_probability">
+                <div class="prob_percent">{{ s.chance_n }} %</div>
+                <div class="prob_text" :style="{ color: getColor(s.chance_status) }">
+                  {{ s.chance_status }}
+                </div>
               </div>
-            </div>
-          </template>
-        </speciality-card>
-      </template>
-    </div>
+            </template>
+          </speciality-card>
+        </template>
+      </div>
+    </template>
   </section>
 </template>
 <script>
 import SpecialityCard from "@/components/SpecialityCard";
-import { mapGetters } from "vuex";
+import Loader from "@/components/Loader";
+import { calculateChances } from "../http/infoAPI";
+import { mapGetters, mapState } from "vuex";
 export default {
   name: "Specialities",
-  components: { SpecialityCard },
+  data() {
+    return {
+      specialities: [],
+    };
+  },
+  components: { Loader, SpecialityCard },
   props: {
     s1: {
       type: String,
@@ -51,65 +65,40 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["subjects"]),
-    specialities() {
-      return [
-        {
-          id: 1,
-          name: "Коммуникации и коммуникационные технологии",
-          code: "B059",
-          last_grant: 55,
-          lowest_point: 48,
-          probability: 100,
-          probability_text: "Хорошие",
-        },
-        {
-          id: 2,
-          name: "Информационные технологии",
-          code: "B057",
-          last_grant: 2493,
-          lowest_point: 106,
-          probability: 68,
-          probability_text: "Средние",
-        },
-        {
-          id: 3,
-          name: "Коммуникации и коммуникационные технологии",
-          code: "B059",
-          last_grant: 55,
-          lowest_point: 48,
-          probability: 30,
-          probability_text: "Низкие",
-        },
-      ];
-    },
+    ...mapGetters("helpers", ["subjects"]),
+    ...mapState("loader", ["loading"]),
     firstSubject() {
-      return this.subjects.find((e) => e.value === this.s1)?.text ?? "";
+      return this.subjects().find((e) => e.value === this.s1)?.text ?? "";
     },
     secondSubject() {
-      return this.subjects.find((e) => e.value === this.s2)?.text ?? "";
+      return this.subjects().find((e) => e.value === this.s2)?.text ?? "";
     },
     isVillageQuota() {
-      return new Boolean(this.q);
+      return this.q;
     },
   },
   methods: {
     getColor(point) {
-      if (point >= 85) return "green";
-      if (point >= 60) return "gold";
+      if (point === 'Высокий') return "green";
+      if (point === 'Средний') return "gold";
       else return "red";
     },
   },
   mounted() {
     if (!(this.firstSubject && this.secondSubject && this.p)) {
       this.$router.push("/404");
+      return;
     }
+    calculateChances(this.s1, this.s2, this.q, this.p).then(
+      (data) => (this.specialities = data.data)
+    );
   },
 };
 </script>
 
 <style scoped lang="scss">
 .results {
+  position: relative;
   padding: 10rem 20rem;
   background: #0a2640;
   &_info {

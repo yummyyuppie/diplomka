@@ -14,11 +14,11 @@
         <div class="edu_info">
           <ul>
             <li class="edu_name">
-              {{ e.name }}
+              {{ e.speciality_name }}
             </li>
-            <li class="edu_subjects">{{ e.subject1 }} и {{ e.subject2 }}</li>
+            <li class="edu_subjects">{{ e.profile_subject_1 }} и {{ e.profile_subject_2 }}</li>
             <li class="edu_group">
-              Группа образовательных програм: {{ e.group }}
+              Группа образовательных програм: {{ e.edu_prog_name }}
             </li>
           </ul>
         </div>
@@ -30,66 +30,24 @@
 
 <script>
 import SpecialityCard from "@/components/SpecialityCard";
+import { getAllSpecialities, getAllSpec } from "@/http/infoAPI";
 export default {
   name: "Specialities",
   components: { SpecialityCard },
-  computed: {
-    specialities() {
-      return [
-        {
-          id: 1,
-          name: "Коммуникации и коммуникационные технологии",
-          code: "B059",
-          last_grant: 55,
-          lowest_point: 48,
-          probability: 100,
-          probability_text: "Хорошие",
-        },
-        {
-          id: 2,
-          name: "Информационные технологии",
-          code: "B057",
-          last_grant: 2493,
-          lowest_point: 106,
-          probability: 68,
-          probability_text: "Средние",
-        },
-        {
-          id: 3,
-          name: "Коммуникации и коммуникационные технологии",
-          code: "B059",
-          last_grant: 55,
-          lowest_point: 48,
-          probability: 30,
-          probability_text: "Низкие",
-        },
-      ];
-    },
-    edu_progs() {
-      return [
-        {
-          id: 1,
-          name: "Дошкольное обучение и воспитание",
-          subject1: "Физика",
-          subject2: "Математика",
-          group: "B003 Педагогика и психология",
-        },
-        {
-          id: 1,
-          name: "Дошкольное обучение и воспитание",
-          subject1: "Физика",
-          subject2: "Математика",
-          group: "B003 Педагогика и психология",
-        },
-        {
-          id: 1,
-          name: "Дошкольное обучение и воспитание",
-          subject1: "Физика",
-          subject2: "Математика",
-          group: "B003 Педагогика и психология",
-        },
-      ];
-    },
+  data() {
+    return {
+      specialities: [],
+      edu_progs: [],
+      pagination: {
+        limit: 5,
+        page: 1,
+        hasNext: false,
+      },
+    };
+  },
+  mounted() {
+    getAllSpecialities(this.pagination.page, this.pagination.limit).then((data) => (this.specialities = data.data));
+    getAllSpec().then(data=>this.edu_progs = data.data)
   },
 };
 </script>
@@ -98,7 +56,7 @@ export default {
 .specialities {
   background: #0a2640;
   padding: 1rem 20rem;
-  .title{
+  .title {
     font-weight: 700;
     font-size: 34px;
     line-height: 46px;

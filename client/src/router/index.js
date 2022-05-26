@@ -7,6 +7,9 @@ import Speciality from "@/views/Speciality";
 import Results from "@/views/Results";
 import PageNotFound from "@/views/PageNotFound";
 import EducationalProgram from "@/views/EducationalProgram";
+import Story from "@/views/Story";
+import CreateStory from '@/views/CreateStory'
+import AdminPanel from "@/views/AdminPanel";
 Vue.use(VueRouter);
 
 const routes = [
@@ -38,7 +41,45 @@ const routes = [
     component: Stories,
     meta: {
       layout: "DefaultLayout",
+      headerColor: 'light'
     },
+  },
+  {
+    path: "/stories/:id",
+    name: "Story",
+    component: Story,
+    meta: {
+      layout: "DefaultLayout",
+      headerColor: 'light'
+    },
+    props: true
+  },
+  {
+    path: '/create-story',
+    name: "CreateStory",
+    component: CreateStory,
+    meta: {
+      layout: "HeaderLayout",
+      headerColor: 'light'
+    }
+  },
+  {
+    path: '/login',
+    name: "Login",
+    component: AdminPanel,
+    meta: {
+      layout: "EmptyLayout",
+      headerColor: 'light'
+    }
+  },
+  {
+    path: '/register',
+    name: "Register",
+    component: AdminPanel,
+    meta: {
+      layout: "EmptyLayout",
+      headerColor: 'light'
+    }
   },
   {
     path: "/specialities",
@@ -55,6 +96,7 @@ const routes = [
     meta: {
       layout: "DefaultLayout",
     },
+    props: true
   },
   {
     path: "/educationalProgram/:id",

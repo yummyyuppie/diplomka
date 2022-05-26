@@ -18,22 +18,41 @@
       </div>
       <div class="student_posts">
         <div class="posts">
-          <post-card v-for="(post, i) in posts" :key="i" />
+          <post-card v-for="post in posts" :key="post.id" :post="post" />
         </div>
       </div>
+      <div class="load_more" v-if="hasMore && !loading">
+        <span class="load_more_btn" @click.p.prevent="loadMore">
+          {{ $t("load_more") }}...
+        </span>
+      </div>
+      <loader v-if="loading" />
     </div>
   </div>
 </template>
 
 <script>
 import PostCard from "@/components/PostCard";
+import { mapActions, mapGetters, mapState, mapMutations } from "vuex";
+import Loader from "@/components/Loader";
+
 export default {
   name: "Stories",
-  components: { PostCard },
-  computed: {
-    posts() {
-      return [0, 1, 2, 3, 4, 5, 6];
+  components: { PostCard, Loader },
+  methods: {
+    ...mapActions(["stories/fetchPosts"]),
+    ...mapMutations(["stories/setPage"]),
+    loadMore() {
+      this.$store.commit("stories/setPage");
+      this.$store.dispatch("stories/fetchPosts");
     },
+  },
+  computed: {
+    ...mapGetters("stories", ["posts", "hasMore"]),
+    ...mapState("loader", ["loading"]),
+  },
+  mounted() {
+    this.$store.dispatch("stories/fetchPosts");
   },
 };
 </script>
@@ -55,6 +74,7 @@ export default {
   }
   .info_content {
     display: flex;
+    flex-wrap: wrap;
     margin-top: 3rem;
     .info_left,
     .info_right {
@@ -62,10 +82,19 @@ export default {
       display: flex;
       align-items: center;
     }
+    .info_left{
+      border-radius: 1rem;
+      overflow: hidden;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
     .info_right {
       font-family: map-get($font, secondary-font);
       font-size: 4.8rem;
       line-height: 7.2rem;
+      padding: 2rem 5rem;
     }
   }
 }
@@ -89,15 +118,33 @@ export default {
     margin-bottom: 4rem;
   }
 }
-.student_posts{
+.student_posts {
   margin-top: 20rem;
   display: flex;
   justify-content: center;
-  .posts{
+  .posts {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
-    gap: 5rem;
-    width: 60%;
+  }
+}
+.load_more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5rem;
+  &_btn {
+    padding: 1.6rem 5.6rem;
+    border: 2px solid #0a2640;
+    border-radius: 5.6rem;
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 2.8rem;
+    cursor: pointer;
+    &:hover {
+      background: #000;
+      color: #fff;
+    }
   }
 }
 </style>

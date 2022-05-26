@@ -64,6 +64,7 @@ export default {
     padding: 1.2rem 1.6rem;
     background-color: #eee;
     border-radius: 0.8rem;
+    font-size: 1.6rem;
   }
   #selected_lang{
     color: #000;
@@ -84,10 +85,11 @@ export default {
       display: flex;
       flex-direction: column;
       row-gap: 1.2rem;
-
+      list-style-type: none;
       li {
         a{
           color: #000;
+          font-size: 1.6rem;
         }
         span {
           color: #000;

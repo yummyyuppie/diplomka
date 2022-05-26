@@ -1,19 +1,28 @@
 <template>
-  <header class="header">
+  <header class="header" :class="{ light: headerColor === 'light' }">
     <div class="header_logo">
       <span>
         <router-link to="/">EduGrant</router-link>
       </span>
     </div>
     <div class="header_nav">
-      <span class="nav_link" :class="{'active_page': currentPage==='Home'}">
+      <span class="nav_link" :class="{ active_page: currentPage === 'Home' }">
         <router-link to="/">{{ $t("main") }}</router-link>
       </span>
-      <span class="nav_link" :class="{'active_page': currentPage==='Stories'}">
+      <span
+        class="nav_link"
+        :class="{ active_page: currentPage === 'Stories' }"
+      >
         <router-link to="/stories">{{ $t("stories") }}</router-link>
       </span>
-      <span class="nav_link" :class="{'active_page': currentPage==='Specialities'}">
+      <span
+        class="nav_link"
+        :class="{ active_page: currentPage === 'Specialities' }"
+      >
         <router-link to="/specialities">{{ $t("specialities") }}</router-link>
+      </span>
+      <span class="nav_link" :class="{ active_page: currentPage === 'CreateStory' }">
+        <router-link to="/create-story">{{ $t("create_story") }}</router-link>
       </span>
       <span class="lang_link">
         <dropdown
@@ -42,6 +51,9 @@ export default {
     currentPage() {
       return this.$router?.currentRoute?.name;
     },
+    headerColor() {
+      return this.$route?.meta?.headerColor || "dark";
+    },
   },
 };
 </script>
@@ -58,10 +70,12 @@ export default {
   z-index: 10;
   &_logo {
     span {
-      font-weight: map-get($font, weight-fat);
-      font-family: map-get($font, secondary-font);
-      font-size: 4.5rem;
-      color: map-get($colors, white);
+      a {
+        font-weight: map-get($font, weight-fat);
+        font-family: map-get($font, secondary-font);
+        font-size: 4.5rem;
+        color: map-get($colors, white);
+      }
     }
   }
   &_nav {
@@ -96,14 +110,30 @@ export default {
         }
       }
     }
-    .active_page{
-      a{
-        color: #65e4a3;
-      }
-    }
     .lang_link {
       font-size: 1.6rem;
     }
+  }
+}
+.light {
+  background: #fff;
+
+  .header_logo {
+    span {
+      a{
+        color: map-get($colors, black);
+      }
+    }
+  }
+  .nav_link {
+    a {
+      color: map-get($colors, black);
+    }
+  }
+}
+.active_page {
+  a {
+    color: #65e4a3!important;
   }
 }
 </style>

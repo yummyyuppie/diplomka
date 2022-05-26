@@ -1,33 +1,42 @@
 <template>
   <div class="speciality">
-    <h1 class="speciality_name">Коммуникации и коммуникационные технологии</h1>
+    <h1 class="speciality_name" style="color: #fff">{{ specialityInfo.edu_prog_name }}</h1>
     <div class="overall_info">
       <div class="bold">Общие сведения</div>
-      <p>Код: B059</p>
-      <p>Профильные предметы: Математика и Физика</p>
-      <p>Область образования: 6B06 Информационно-коммуникационные технологии</p>
-      <p>Направление подготовки: 6B062 Телекомммуникации</p>
+      <p>Код: {{ specialityInfo.edu_prog_id }}</p>
+      <p>
+        Профильные предметы: {{ specialityInfo.profile_subject_1 }} и
+        {{ specialityInfo.profile_subject_2 }}
+      </p>
+      <p>Область образования: {{ specialityInfo.field_education }}</p>
+      <p>Направление подготовки: {{ specialityInfo.subfield_education }}</p>
     </div>
     <div class="grant_amount">
       <div class="bold">Количество грантов</div>
-      <p>2021 год: 885</p>
-      <p>2020 год: 999</p>
+      <p>2022 год: {{ specialityInfo.count_grant_2022 }}</p>
+      <p>2021 год: {{ specialityInfo.count_grant_2021 }}</p>
     </div>
     <div class="grant_info">
       <div class="bold">Общий грант</div>
-      <p>Минимальный балл(Общий грант): 88</p>
-      <p>Минимальный балл(Сельская квота): 88</p>
+      <p>
+        Минимальный балл(Общий грант):
+        {{ specialityInfo.min_point_state_gr_state_quota }}
+      </p>
+      <p>
+        Минимальный балл(Сельская квота):
+        {{ specialityInfo.min_point_state_gr_rural_quota }}
+      </p>
     </div>
-    <div class="ord_table">
+    <div class="ord_table" v-if="ordinaryQuotaInfoState.length>0">
       <speciality-table :cols="cols">
         <template #table-header>
           <th colspan="6">Общий конкурс</th>
         </template>
         <template #table-content>
-          <tr v-for="(u, i) in ordinaryQuotaInfo" :key="i">
-            <td>{{ u.code }}</td>
-            <td>{{ u.uni }}</td>
-            <td>{{ u.students_amount }}</td>
+          <tr v-for="(u, i) in ordinaryQuotaInfoState" :key="i">
+            <td>{{ u.university_id }}</td>
+            <td>{{ u.university_name }}</td>
+            <td>{{ u.count_enrollment }}</td>
             <td>{{ u.min_point }}</td>
             <td>{{ u.max_point }}</td>
             <td>{{ u.avg_point }}</td>
@@ -35,16 +44,61 @@
         </template>
       </speciality-table>
     </div>
-    <div class="vill_table">
+    <div class="vill_table" v-if="villageQuotaInfoState.length>0">
       <speciality-table :cols="cols">
         <template #table-header>
           <th colspan="6">Сельская квота</th>
         </template>
         <template #table-content>
-          <tr v-for="(u, i) in villageQuotaInfo" :key="i">
-            <td>{{ u.code }}</td>
-            <td>{{ u.uni }}</td>
-            <td>{{ u.students_amount }}</td>
+          <tr v-for="(u, i) in villageQuotaInfoState" :key="i">
+            <td>{{ u.university_id }}</td>
+            <td>{{ u.university_name }}</td>
+            <td>{{ u.count_enrollment }}</td>
+            <td>{{ u.min_point }}</td>
+            <td>{{ u.max_point }}</td>
+            <td>{{ u.avg_point }}</td>
+          </tr>
+        </template>
+      </speciality-table>
+    </div>
+    <div class="grant_info">
+      <div class="bold">Целевой грант</div>
+      <p>
+        Минимальный балл(Общий грант):
+        {{ specialityInfo.min_point_target_gr_state_quota }}
+      </p>
+      <p>
+        Минимальный балл(Сельская квота):
+        {{ specialityInfo.min_point_target_gr_rural_quota }}
+      </p>
+    </div>
+    <div class="ord_table" v-if="ordinaryQuotaInfoTarget.length>0">
+      <speciality-table :cols="cols">
+        <template #table-header>
+          <th colspan="6">Общий конкурс</th>
+        </template>
+        <template #table-content>
+          <tr v-for="(u, i) in ordinaryQuotaInfoTarget" :key="i">
+            <td>{{ u.university_id }}</td>
+            <td>{{ u.university_name }}</td>
+            <td>{{ u.count_enrollment }}</td>
+            <td>{{ u.min_point }}</td>
+            <td>{{ u.max_point }}</td>
+            <td>{{ u.avg_point }}</td>
+          </tr>
+        </template>
+      </speciality-table>
+    </div>
+    <div class="vill_table" v-if="villageQuotaInfoTarget.length>0">
+      <speciality-table :cols="cols">
+        <template #table-header>
+          <th colspan="6">Сельская квота</th>
+        </template>
+        <template #table-content>
+          <tr v-for="(u, i) in villageQuotaInfoTarget" :key="i">
+            <td>{{ u.university_id }}</td>
+            <td>{{ u.university_name }}</td>
+            <td>{{ u.count_enrollment }}</td>
             <td>{{ u.min_point }}</td>
             <td>{{ u.max_point }}</td>
             <td>{{ u.avg_point }}</td>
@@ -54,9 +108,9 @@
     </div>
     <div class="educ_prog">
       <p class="educ_prog_title bold">Образовательные программы</p>
-      <div class="educ_prog_item" v-for="i in 5" :key="i">
+      <div class="educ_prog_item" v-for="s in otherSpecialities" :key="s.name">
         <p class="educ_prog_name" @click.stop="singleEducProgram">
-          Радиотехника, электроника и телекоммуникации
+          {{ s.speciality_name }}
         </p>
       </div>
     </div>
@@ -65,65 +119,44 @@
 
 <script>
 import SpecialityTable from "@/components/SpecialityTable";
+import {
+  getSpecialityInfo,
+  uniInfo,
+  getOtherSpecialities,
+} from "@/http/infoAPI";
 export default {
   name: "Speciality",
   components: { SpecialityTable },
-  computed: {
-    ordinaryQuotaInfo() {
-      return [
-        {
-          code: 12,
-          uni: "КБТУ",
-          students_amount: 556,
-          min_point: 55,
-          max_point: 138,
-          avg_point: 99,
-        },
-        {
-          code: 12,
-          uni: "КБТУ",
-          students_amount: 556,
-          min_point: 55,
-          max_point: 138,
-          avg_point: 99,
-        },
-        {
-          code: 12,
-          uni: "КБТУ",
-          students_amount: 556,
-          min_point: 55,
-          max_point: 138,
-          avg_point: 99,
-        },
-      ];
+  props: {
+    id: {
+      type: String,
+      default: "",
     },
-    villageQuotaInfo() {
-      return [
-        {
-          code: 12,
-          uni: "КБТУ",
-          students_amount: 556,
-          min_point: 55,
-          max_point: 138,
-          avg_point: 99,
-        },
-        {
-          code: 12,
-          uni: "КБТУ",
-          students_amount: 556,
-          min_point: 55,
-          max_point: 138,
-          avg_point: 99,
-        },
-        {
-          code: 12,
-          uni: "КБТУ",
-          students_amount: 556,
-          min_point: 55,
-          max_point: 138,
-          avg_point: 99,
-        },
-      ];
+  },
+  data() {
+    return {
+      specialityInfo: {},
+      uniInfoState: [],
+      uniInfoTarget: [],
+      otherSpecialities: [],
+    };
+  },
+  computed: {
+    ordinaryQuotaInfoState() {
+      return this.uniInfoState.filter((e) => e.grant_type.includes("Общий конкурс"));
+    },
+    villageQuotaInfoState() {
+      return this.uniInfoState.filter((e) =>
+        e.grant_type.includes("Сельская квота")
+      );
+    },
+    ordinaryQuotaInfoTarget() {
+      return this.uniInfoTarget.filter((e) => e.grant_type.includes("Общий конкурс"));
+    },
+    villageQuotaInfoTarget() {
+      return this.uniInfoTarget.filter((e) =>
+        e.grant_type.includes("Сельская квота")
+      );
     },
     cols() {
       return [
@@ -140,6 +173,14 @@ export default {
     singleEducProgram() {
       this.$router.push("/educationalProgram/1");
     },
+  },
+  mounted() {
+    getSpecialityInfo(this.id).then(
+      (data) => (this.specialityInfo = data.data[0])
+    );
+    uniInfo(this.id, 'state').then((data) => (this.uniInfoState = data.data));
+    uniInfo(this.id, 'target').then((data) => (this.uniInfoTarget = data.data));
+    getOtherSpecialities(this.id).then((data) => this.otherSpecialities = data.data);
   },
 };
 </script>
@@ -166,7 +207,7 @@ export default {
 .overall_info,
 .grant_amount,
 .grant_info {
-  margin-bottom: 4rem;
+  margin: 4rem 0rem;
 }
 td {
   border: 1px solid #8b9296;
@@ -183,6 +224,12 @@ td {
       cursor: pointer;
       color: #65e4a3;
     }
+  }
+}
+@media screen and (max-width: 1024px) {
+  .speciality{
+    padding-left: 8rem;
+    padding-right: 8rem;
   }
 }
 </style>

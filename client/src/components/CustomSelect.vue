@@ -3,6 +3,7 @@
     class="select_wrap"
     :class="{ active: toggleSelect }"
     @click.stop="toggleSelect = !toggleSelect"
+    v-click-outside="() => (toggleSelect = false)"
   >
     <ul class="default_option">
       <li v-if="selectedItem">
@@ -45,10 +46,15 @@
 </template>
 
 <script>
+import ClickOutside from "vue-click-outside";
 export default {
   name: "CustomSelect",
   props: {
     placeholder: {
+      type: String,
+      default: "",
+    },
+    selected: {
       type: String,
       default: "",
     },
@@ -61,6 +67,14 @@ export default {
       default: "",
     },
   },
+  watch: {
+    selected(val) {
+        this.selectedItem = this.options.find((e) => e.text === val) ?? "";
+    },
+  },
+  directives: {
+    ClickOutside,
+  },
   data() {
     return {
       toggleSelect: false,
@@ -70,7 +84,6 @@ export default {
   methods: {
     setItemSelected(option) {
       this.toggleSelect = false;
-      this.selectedItem = option;
       this.$emit("setSelected", this.name, option);
     },
   },
@@ -79,7 +92,7 @@ export default {
 
 <style scoped lang="scss">
 .select_wrap {
-  width: 225px;
+  width: 100%;
   margin: 15px 0;
   position: relative;
   user-select: none;
@@ -155,6 +168,7 @@ export default {
 .select_wrap .option {
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 .select_wrap.active .select_ul {
   display: block;

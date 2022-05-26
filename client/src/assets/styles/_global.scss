@@ -1,6 +1,29 @@
 html {
   font-size: 62.5%;
 }
+p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video{
+  font: inherit;
+}
+*{
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+}
+a{
+  text-decoration: none;
+  color: inherit;
+}
 .container {
   padding: 0 7rem;
 }
@@ -14,4 +37,21 @@ html {
   background: map-get($colors, green);
   border: 2px solid map-get($colors, border-green);
   border-radius: 5.6rem;
+}
+table{
+  border-collapse: collapse;
+}
+ul{
+  list-style-type: none;
+}
+img{
+  max-width: 100%;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #000;
 }

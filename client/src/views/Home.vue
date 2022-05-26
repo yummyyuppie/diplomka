@@ -19,27 +19,33 @@
           <div class="form_content">
             <div class="subject first_subject form_item">
               <div class="form_title">{{ $t("profile_subject_1") }}</div>
-              <custom-select
-                :placeholder="$t('subject_1')"
-                :options="[
-                  { value: 'math', text: 'Математика' },
-                  { value: 'physics', text: 'Физика' },
-                ]"
-                :name="'s1'"
-                @setSelected="setSubject"
-              />
+              <div class="clear">
+                <custom-select
+                  :placeholder="$t('subject_1')"
+                  :options="getFirstSubjectOptions"
+                  :name="'s1'"
+                  :selected="s1"
+                  @setSelected="setSubject"
+                />
+                <span class="clear_btn" @click.stop="s1 = ''">
+                  <font-awesome-icon icon="fa-solid fa-xmark" size="sm" />
+                </span>
+              </div>
             </div>
             <div class="subject second_subject form_item">
               <div class="form_title">{{ $t("profile_subject_2") }}</div>
-              <custom-select
-                :placeholder="$t('subject_2')"
-                :options="[
-                  { value: 'math', text: 'Математика' },
-                  { value: 'physics', text: 'Физика' },
-                ]"
-                :name="'s2'"
-                @setSelected="setSubject"
-              />
+              <div class="clear">
+                <custom-select
+                  :placeholder="$t('subject_2')"
+                  :options="getSecondSubjectOptions"
+                  :name="'s2'"
+                  :selected="s2"
+                  @setSelected="setSubject"
+                />
+                <span class="clear_btn" @click.stop="s2 = ''">
+                  <font-awesome-icon icon="fa-solid fa-xmark" size="sm" />
+                </span>
+              </div>
             </div>
             <div class="village_quota form_item">
               <div class="form_title">{{ $t("village_quota") }}</div>
@@ -59,11 +65,16 @@
                 max="140"
                 :placeholder="$t('ent_points')"
                 v-model="filters.p"
+                @focusout="handleUntScore"
               />
             </div>
           </div>
           <div class="btn_wrapper">
-            <div class="chances_btn" @click.stop="exploreChances">
+            <div
+              class="chances_btn"
+              @click.stop="exploreChances"
+              :class="{ disabled: !isReadyToSubmit }"
+            >
               {{ $t("explore_chances") }}
             </div>
           </div>
@@ -134,6 +145,7 @@
 import SliderCard from "@/components/SliderCard";
 import CustomSelect from "@/components/CustomSelect";
 import Intro from "@/components/Intro";
+import { mapGetters } from "vuex";
 export default {
   name: "Home",
   components: { Intro, SliderCard, CustomSelect },
@@ -141,9 +153,12 @@ export default {
     return {
       showModal: false,
       filters: {},
+      s1: "",
+      s2: "",
     };
   },
   computed: {
+    ...mapGetters("helpers", ["subjects"]),
     reviews() {
       return [
         {
@@ -178,15 +193,43 @@ export default {
         },
       ];
     },
+    isReadyToSubmit() {
+      return this.s1 && this.s2 && this.filters.p;
+    },
+    getFirstSubjectOptions() {
+      return this.subjects(this.s2);
+    },
+    getSecondSubjectOptions() {
+      return this.subjects(this.s1);
+    },
   },
   methods: {
     exploreChances() {
-      const { s1, s2, q = "false", p } = this.filters;
-      this.$router.push({ name: "Results", query: { s1, s2, q, p } });
+      if (!this.isReadyToSubmit) return;
+      this.handleUntScore();
+      const { q = false, p } = this.filters;
+      this.$router.push({
+        name: "Results",
+        query: { s1: this.s1, s2: this.s2, q, p },
+      });
     },
     setSubject(name, option) {
-      if (name === "s1") this.filters.s1 = option.value;
-      else if (name === "s2") this.filters.s2 = option.value;
+      if (name === "s1") this.s1 = option.value;
+      else if (name === "s2") this.s2 = option.value;
+    },
+    handleUntScore() {
+      const isCreative =
+        this.s1 === "Творческий экзамен" || this.s2 === "Творческий экзамен";
+      const value = this.filters?.p;
+      if (isCreative) {
+        if (value > 125 || value < 50) {
+          this.filters.p = 50;
+        }
+      } else {
+        if (value > 140 || value < 50) {
+          this.filters.p = 50;
+        }
+      }
     },
   },
 };

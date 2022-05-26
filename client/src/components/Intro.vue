@@ -54,6 +54,7 @@ export default {
       font-weight: map-get($font, weight-fat);
       font-size: 2rem;
       line-height: 3.6rem;
+      cursor: pointer;
     }
   }
   &_right {
@@ -80,7 +81,7 @@ export default {
   z-index: -1;
 }
 .ent_form {
-  padding: 2.5rem 6rem;
+  padding: 2.5rem 3rem;
   background: rgba(188, 215, 255, 0.7);
   border: 1px solid #122088;
   width: 50%;
@@ -160,11 +161,28 @@ export default {
     line-height: 20px;
     cursor: pointer;
   }
+  .disabled{
+    background: gray;
+    color: #fff;
+    user-select: none;
+  }
+}
+.clear{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 1024px) {
   .intro_right {
     display: none;
+  }
+  .intro_left{
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

@@ -38,6 +38,9 @@ table {
 td {
   background: #fff;
   border: 1px solid #8b9296;
+  padding: 1rem;
   text-align: center;
+  font-size: 1.6rem;
+  line-height: 2.4rem;
 }
 </style>

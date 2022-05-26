@@ -8,6 +8,14 @@ const EducationProgramGroup = sequelize.define('group_educational_program', {
 }, {
   freezeTableName: true
 })
+const ProfileSubject = sequelize.define('profile_subject', {
+  id: {type: DataTypes.STRING, allowNull: false, primaryKey: true},
+  subject_name_ru: {type: DataTypes.STRING, allowNull: false},
+  subject_name_kz: {type: DataTypes.STRING, allowNull: false}
+}, {
+  freezeTableName: true,
+  timestamps: false
+})
 
 const Subject  = sequelize.define('subject', {
   edu_prog_id: {type: DataTypes.STRING, allowNull: false},
@@ -70,6 +78,40 @@ const EducationalProgramGroupsStats = sequelize.define('stat_by_group_educ_progr
 }, {
   freezeTableName: true
 })
+const Post = sequelize.define('post', {
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  content: {
+    type: DataTypes.TEXT, allowNull: false
+  },
+  slug: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  author: {
+    type: DataTypes.STRING,
+    default: 'Admin'
+  },
+  thumbnail: {
+    type: DataTypes.STRING,
+  },
+  isApproved: {
+    type: DataTypes.BOOLEAN,
+    default: false
+  }
+}, {
+  freezeTableName: true, timestamps: false
+})
+const User = sequelize.define('user', {
+  id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+  email: {type: DataTypes.STRING, unique: true,},
+  password: {type: DataTypes.STRING},
+  role: {type: DataTypes.STRING, defaultValue: "USER"},
+}, {
+  freezeTableName: true, timestamps: false
+})
 module.exports = {
   EducationProgramGroup,
   EducationalProgramGroupsStats,
@@ -77,5 +119,8 @@ module.exports = {
   GeneralInformation,
   Subject,
   Speciality,
-  University
+  University,
+  ProfileSubject,
+  Post,
+  User
 }
